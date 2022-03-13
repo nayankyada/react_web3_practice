@@ -1,14 +1,26 @@
 import React from "react";
+import { Button } from "semantic-ui-react";
 import "./style/index.css";
-
+import "semantic-ui-css/semantic.min.css";
+import useWeb3 from "./hooks/web3.js";
 function App() {
+  const [web3, connectMetamask, account, balance] = useWeb3();
+  const onClick = async () => {
+    await connectMetamask();
+  };
+
   return (
-    <div className="App test">
-      <header>
-        <h1 className="font-extrabold text-2xl w-full flex justify-center h-full items-center text-primary-1">
-          Welcome to Create-React-App, Apollo-Graphql, Tailwind-CSS scaffold project
-        </h1>
-      </header>
+    <div className="App">
+      {account ? (
+        <div>
+          {account} - {balance}
+        </div>
+      ) : (
+        <Button primary onClick={onClick}>
+          Connect Metamask
+        </Button>
+      )}
+      
     </div>
   );
 }
