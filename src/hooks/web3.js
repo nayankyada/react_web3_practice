@@ -5,6 +5,7 @@ const useWeb3 = () => {
 
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
+  const [chainId, setChainId] = useState("");
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     web3 = new Web3(window.ethereum);
   } else {
@@ -13,13 +14,7 @@ const useWeb3 = () => {
     );
     web3 = new Web3(provider);
   }
-  const getBalance = async () => {
-    const balance = web3.utils.fromWei(
-      await web3.eth.getBalance(account),
-      "ether"
-    );
-    setBalance(balance);
-  };
+
   useEffect(() => {
     const g = async () => {
       await getBalance();
@@ -27,7 +22,14 @@ const useWeb3 = () => {
     if (account) {
       g();
     }
-  }, [account]);
+  }, [account, chainId]);
+  const getBalance = async () => {
+    const balance = web3.utils.fromWei(
+      await web3.eth.getBalance(account),
+      "ether"
+    );
+    setBalance(balance);
+  };
   const handleAccountsChanged = async (accounts) => {
     if (accounts.length === 0) {
       // MetaMask is locked or the user has not connected any accounts
@@ -37,7 +39,9 @@ const useWeb3 = () => {
       setAccount(accounts[0]);
     }
   };
-  window.ethereum.on("accountsChanged", handleAccountsChanged);
+  const handleNetworkChanged = (cid) => {
+    setChainId(cid);
+  };
 
   const connectMetamask = async () => {
     window.ethereum
@@ -46,7 +50,9 @@ const useWeb3 = () => {
       })
       .then(handleAccountsChanged);
   };
+  window.ethereum.on("accountsChanged", handleAccountsChanged);
+  window.ethereum.on("networkChanged", handleNetworkChanged);
 
-  return [web3, connectMetamask, account, balance];
+  return [web3, connectMetamask, account, balance, chainId];
 };
 export default useWeb3;
