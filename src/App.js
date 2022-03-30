@@ -17,10 +17,9 @@ function App() {
         </div>
       ) : (
         <Button primary onClick={onClick}>
-          Connect Metamask
+          Connect Metamaskd
         </Button>
       )}
-      
     </div>
   );
 }
